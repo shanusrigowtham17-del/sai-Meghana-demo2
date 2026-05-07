@@ -26,7 +26,6 @@
     -webkit-font-smoothing: antialiased;
   }
   
-  /* 3D Canvas Container */
   #webgl-container {
     position: fixed;
     top: 0;
@@ -37,7 +36,7 @@
     pointer-events: none;
   }
 
-  /* Spatial UI Overlays */
+  /* Improved Text Visibility Layer */
   .ui-layer {
     position: fixed;
     top: 0;
@@ -52,7 +51,6 @@
     padding: 3rem 4rem;
   }
 
-  /* Header & Navigation */
   header {
     display: flex;
     justify-content: space-between;
@@ -60,108 +58,135 @@
     width: 100%;
     pointer-events: auto;
   }
-  .brand { display: flex; align-items: center; gap: 1.2rem; }
+  
+  /* Parallel Logo and Text Box logic */
+  .brand { 
+    display: flex; 
+    align-items: center; 
+    gap: 1.2rem;
+  }
   .logo-box {
-    width: 68px;
-    height: 68px;
+    width: 72px;
+    height: 72px;
     border: 2px solid white;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 3px;
-    background: rgba(0, 34, 68, 0.4);
-    backdrop-filter: blur(4px);
+    border-radius: 4px;
+    background: rgba(0, 18, 41, 0.6);
+    backdrop-filter: blur(8px);
+    flex-shrink: 0;
   }
-  .brand-text h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: 0.15em; }
-  .brand-text p { font-size: 0.65rem; font-weight: 600; color: var(--cyan); letter-spacing: 0.12em; margin-top: 4px;}
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 72px; 
+  }
+  .brand-text h1 { 
+    font-size: 1.6rem; 
+    font-weight: 700; 
+    letter-spacing: 0.12em; 
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .brand-text p { 
+    font-size: 0.7rem; 
+    font-weight: 600; 
+    color: var(--cyan); 
+    letter-spacing: 0.15em; 
+    text-transform: uppercase;
+  }
   
   nav { display: flex; gap: 2.5rem; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; }
   nav a {
-    color: #ffffff;
+    color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
+    padding: 0.5rem 0;
   }
   nav a:hover { color: var(--cyan); }
-  nav a.active { color: var(--cyan); pointer-events: none; }
+  nav a.active { color: var(--cyan); border-bottom: 2px solid var(--cyan); }
 
-  /* Main Cinematic Content */
+  /* Content Shield */
   .content-container {
-    max-width: 700px;
-    margin-top: -5vh; /* Optical centering */
+    max-width: 750px;
+    margin-top: -5vh;
+    padding: 2.5rem;
+    background: linear-gradient(to right, rgba(0, 18, 41, 0.8), transparent);
+    backdrop-filter: blur(4px);
+    border-left: 3px solid var(--cyan);
+    pointer-events: auto;
   }
   .phase-label {
     font-family: monospace;
     color: var(--cyan);
-    letter-spacing: 0.3em;
-    font-size: 0.85rem;
-    margin-bottom: 1.5rem;
+    letter-spacing: 0.4em;
+    font-size: 0.8rem;
+    margin-bottom: 1.2rem;
     text-transform: uppercase;
+    font-weight: 700;
   }
   h2 {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(2.5rem, 5vw, 4.5rem);
-    font-weight: 300;
+    font-size: clamp(2.5rem, 5vw, 4.2rem);
+    font-weight: 400;
     line-height: 1.1;
     margin-bottom: 1.5rem;
+    color: #ffffff;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.5);
   }
   p.desc {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 300;
-    color: #cbd5e1;
-    line-height: 1.8;
-    max-width: 550px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.7;
+    max-width: 600px;
   }
 
-  /* Telemetry Footer */
   footer {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
     width: 100%;
     border-top: 1px solid rgba(255,255,255,0.15);
-    padding-top: 1.5rem;
+    padding-top: 2rem;
     font-family: monospace;
     font-size: 0.75rem;
     letter-spacing: 0.15em;
+    background: linear-gradient(to top, var(--deep-navy), transparent);
+    pointer-events: auto;
   }
   .telemetry-left { color: #888; line-height: 1.8; }
-  .telemetry-left span { color: var(--cyan); }
+  .telemetry-left span { color: var(--cyan); font-weight: 700; }
   .telemetry-right { display: flex; gap: 4rem; }
   .t-block { display: flex; flex-direction: column; }
-  .t-block .lbl { color: #666; margin-bottom: 6px; }
+  .t-block .lbl { color: #666; margin-bottom: 6px; text-transform: uppercase; font-size: 0.65rem; }
 
-  /* Invisible Scroll Proxy to drive GSAP */
   #scroll-proxy { height: 500vh; position: absolute; top: 0; width: 100%; z-index: -1; }
 
-  /* 📱 MOBILE RESPONSIVENESS */
   @media (max-width: 768px) {
     .ui-layer { padding: 1.5rem; }
     header { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
-    .logo-box { width: 50px; height: 50px; }
-    .brand-text h1 { font-size: 1.1rem; }
-    .brand-text p { font-size: 0.55rem; }
+    .logo-box { width: 60px; height: 60px; }
+    .brand-text { height: 60px; }
+    .brand-text h1 { font-size: 1.2rem; }
     nav { gap: 1rem; flex-wrap: wrap; }
-    
-    .content-container { margin-top: 5vh; }
-    h2 { font-size: 2.2rem; margin-bottom: 1rem; }
-    p.desc { font-size: 0.95rem; }
-    
-    footer { flex-direction: column; align-items: flex-start; gap: 1.5rem; font-size: 0.65rem; padding-top: 1rem; }
-    .telemetry-right { gap: 2rem; width: 100%; }
+    .content-container { padding: 1.5rem; margin-top: 0; }
+    h2 { font-size: 2.2rem; }
+    footer { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
   }
 </style>
 </head>
 <body>
 
-<!-- The 3D World -->
 <div id="webgl-container"></div>
 
-<!-- The UI Overlay -->
 <div class="ui-layer">
   <header>
     <div class="brand">
       <div class="logo-box">
-        <svg viewBox="0 0 200 130" fill="none" style="width: 80%; height: 80%;">
+        <svg viewBox="0 0 200 130" fill="none" style="width: 85%; height: 85%;">
           <g transform="translate(100, 5)">
             <polygon points="0,0 22,25 0,16" fill="#ffffff" stroke="#002147" stroke-width="2"/>
             <polygon points="0,0 -22,25 0,16" fill="#00adef" stroke="#002147" stroke-width="2"/>
@@ -174,10 +199,9 @@
       </div>
       <div class="brand-text">
         <h1>SAI MEGHANA</h1>
-        <p>TECHNICAL CONSULTANTS</p>
+        <p>Technical Consultants LLP</p>
       </div>
     </div>
-    <!-- REAL MULTI-PAGE HTML NAVIGATION LINKS -->
     <nav>
       <a href="index.html" id="link-index">HOME</a>
       <a href="services.html" id="link-services">SERVICES</a>
@@ -188,42 +212,62 @@
   </header>
 
   <div class="content-container" id="sec-content">
-    <div class="phase-label" id="t-sub">PHASE I — BLUEPRINT VOID</div>
-    <h2 id="t-head">ENGINEERING<br>EXCELLENCE</h2>
-    <p class="desc" id="t-desc">A digital twin of futuristic industrial potential. We architect the unseen.</p>
+    <div class="phase-label" id="t-sub">Phase I // Initialization</div>
+    <h2 id="t-head">Engineering<br>Authority</h2>
+    <p class="desc" id="t-desc">With 2+ years of dedicated excellence, we bridge the gap between architectural vision and industrial reality. Precision is our baseline.</p>
   </div>
 
   <footer>
     <div class="telemetry-left">
-      SYSTEM_STATE: <span>NOMINAL</span><br>
-      LOC: HYDERABAD, TS<br>
-      EST: 2+ YRS
+      SYSTEM_STATE: <span>ACTIVE</span><br>
+      GEO_LOC: HYDERABAD, INDIA<br>
+      LEGACY: <span>2+ YEARS ACTIVE</span>
     </div>
     <div class="telemetry-right">
-      <div class="t-block"><span class="lbl">SCROLL</span><span style="color: white">TO EVOLVE</span></div>
-      <div class="t-block"><span class="lbl">PHASE</span><span style="color: white" id="t-phase">01 / 05</span></div>
+      <div class="t-block"><span class="lbl">Experience</span><span style="color: white">ENGINEERED</span></div>
+      <div class="t-block"><span class="lbl">Phase</span><span style="color: white" id="t-phase">01 / 05</span></div>
     </div>
   </footer>
 </div>
 
-<!-- Invisible div to create scrollbar -->
 <div id="scroll-proxy"></div>
 
 <script>
 'use strict';
 
-// ─────────────────────────────────────────────────────────────────
-// SMART ROUTER & UI CONTENT DATA
-// ─────────────────────────────────────────────────────────────────
 const uiContent = [
-  { id: "index", sub: "PHASE I — BLUEPRINT VOID", head: "ENGINEERING<br>EXCELLENCE", desc: "A digital twin of futuristic industrial potential. We architect the unseen." },
-  { id: "services", sub: "PHASE II — ROBOTIC CONSTRUCTION", head: "DYNAMIC<br>ASSEMBLY", desc: "Procedural structural growth. Heavy machine foundations and internal utilities emerge." },
-  { id: "expertise", sub: "PHASE III — STEEL & CONCRETE", head: "STRUCTURAL<br>GROWTH", desc: "Silos, chimneys, and industrial sheds assemble. The architecture of industry takes physical form." },
-  { id: "about", sub: "PHASE IV — TELEMETRY", head: "INDUSTRIAL<br>INTELLIGENCE", desc: "Data visualization architecture. Monitoring vendor selection, contract management, and site supervision." },
-  { id: "contact", sub: "PHASE V — COMPLETE", head: "SAI MEGHANA<br>LLP", desc: "2+ years of precision, integrity, and engineering authority in Hyderabad, Telangana." }
+  { 
+    id: "index", 
+    sub: "PHASE I // ARCHITECTURAL DRAFTING", 
+    head: "Engineering<br>Excellence", 
+    desc: "Sai Meghana Technical Consultants LLP provides end-to-end civil and structural solutions. We turn complex industrial blueprints into sustainable landmarks." 
+  },
+  { 
+    id: "services", 
+    sub: "PHASE II // CORE CAPABILITIES", 
+    head: "Industrial<br>Solutions", 
+    desc: "From heavy machine foundations to utility infrastructure, our service ecosystem covers the entire lifecycle of industrial construction and site supervision." 
+  },
+  { 
+    id: "expertise", 
+    sub: "PHASE III // TECHNICAL PRECISION", 
+    head: "Structural<br>Integrity", 
+    desc: "Specialized in RCC structures, silos, and chimneys. Our engineering protocols ensure every build exceeds IS compliance and durability standards." 
+  },
+  { 
+    id: "about", 
+    sub: "PHASE IV // CORPORATE LEGACY", 
+    head: "2+ Years of<br>Trust", 
+    desc: "Headquartered in Hyderabad, we have spent 2+ years delivering uncompromising quality. Our LLP status reflects our commitment to professional liability and integrity." 
+  },
+  { 
+    id: "contact", 
+    sub: "PHASE V // PROJECT INITIATION", 
+    head: "Build The<br>Future", 
+    desc: "Partner with a team of passionate creators. Transmit your project requirements to our technical hub and let's construct something that lasts." 
+  }
 ];
 
-// Detect which page the user is currently on
 const path = window.location.pathname.toLowerCase();
 let startPhase = 0;
 if (path.includes('services')) startPhase = 1;
@@ -231,17 +275,15 @@ else if (path.includes('expertise')) startPhase = 2;
 else if (path.includes('about')) startPhase = 3;
 else if (path.includes('contact')) startPhase = 4;
 
-// Highlight the active navigation link
-document.getElementById(`link-${uiContent[startPhase].id}`).classList.add('active');
+const activeLink = document.getElementById(`link-${uiContent[startPhase].id}`);
+if(activeLink) activeLink.classList.add('active');
 
-// Pre-fill HTML with the correct page data instantly to prevent flickering
 const initialContent = uiContent[startPhase];
 document.getElementById('t-sub').innerText = initialContent.sub;
 document.getElementById('t-head').innerHTML = initialContent.head;
 document.getElementById('t-desc').innerText = initialContent.desc;
 document.getElementById('t-phase').innerText = `0${startPhase + 1} / 05`;
 
-// Auto-Scroll the invisible proxy so the 3D engine knows where to start
 window.addEventListener('load', () => {
   if (startPhase > 0) {
     const totalScroll = document.body.scrollHeight - window.innerHeight;
@@ -249,24 +291,18 @@ window.addEventListener('load', () => {
   }
 });
 
-// ─────────────────────────────────────────────────────────────────
-// THREE.JS ENGINE SETUP
-// ─────────────────────────────────────────────────────────────────
 const container = document.getElementById('webgl-container');
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#002244');
-scene.fog = new THREE.FogExp2('#002244', 0.015);
+scene.background = new THREE.Color('#001229');
+scene.fog = new THREE.FogExp2('#001229', 0.02);
 
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 container.appendChild(renderer.domElement);
 
-// Lighting
 scene.add(new THREE.AmbientLight(0xffffff, 0.8));
 const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
 dirLight.position.set(30, 50, -20);
@@ -275,11 +311,10 @@ scene.add(dirLight);
 
 const spotLight = new THREE.SpotLight('#00adef', 3);
 spotLight.position.set(-20, 20, 20);
+spotLight.angle = 0.5;
+spotLight.penumbra = 1;
 scene.add(spotLight);
 
-// ─────────────────────────────────────────────────────────────────
-// CUSTOM GLSL SHADER: BLUEPRINT HOLOGRAM
-// ─────────────────────────────────────────────────────────────────
 const blueprintMaterial = new THREE.ShaderMaterial({
   uniforms: {
     time: { value: 0 },
@@ -314,9 +349,6 @@ ground.position.y = -0.1;
 ground.receiveShadow = true;
 scene.add(ground);
 
-// ─────────────────────────────────────────────────────────────────
-// PROCEDURAL CAMPUS GENERATION
-// ─────────────────────────────────────────────────────────────────
 const campusGroup = new THREE.Group();
 scene.add(campusGroup);
 const buildings = [];
@@ -350,7 +382,6 @@ for(let i=0; i<gridSize * gridSize; i++) {
   buildings.push({ bp: bpMesh, solid: solidMesh, targetHeight: scale.y, seed: Math.random() });
 }
 
-// Data Particles
 const partsGeo = new THREE.BufferGeometry();
 const partsPos = [];
 for(let i=0; i<1500; i++) partsPos.push((Math.random()-0.5)*120, Math.random()*30, (Math.random()-0.5)*120);
@@ -358,11 +389,8 @@ partsGeo.setAttribute('position', new THREE.Float32BufferAttribute(partsPos, 3))
 const particleSystem = new THREE.Points(partsGeo, new THREE.PointsMaterial({ color: '#00adef', size: 0.25, transparent: true, opacity: 0.6 }));
 scene.add(particleSystem);
 
-// ─────────────────────────────────────────────────────────────────
-// GSAP SCROLL SYSTEM & STATE
-// ─────────────────────────────────────────────────────────────────
 gsap.registerPlugin(ScrollTrigger);
-const engineState = { scrollProgress: (startPhase / 4) }; // Initialize at correct phase
+const engineState = { scrollProgress: (startPhase / 4) };
 let currentPhaseIndex = startPhase;
 
 ScrollTrigger.create({
@@ -375,27 +403,25 @@ ScrollTrigger.create({
     
     if (newPhaseIndex !== currentPhaseIndex) {
       currentPhaseIndex = newPhaseIndex;
-      document.getElementById('t-phase').innerText = `0${currentPhaseIndex + 1} / 05`;
+      const phaseEl = document.getElementById('t-phase');
+      if(phaseEl) phaseEl.innerText = `0${currentPhaseIndex + 1} / 05`;
       
       const content = uiContent[currentPhaseIndex];
       const secContainer = document.getElementById('sec-content');
       
       gsap.to(secContainer, { 
-        opacity: 0, y: -30, duration: 0.25, ease: "power2.in",
+        opacity: 0, x: -50, duration: 0.25, ease: "power2.in",
         onComplete: () => {
           document.getElementById('t-sub').innerText = content.sub;
           document.getElementById('t-head').innerHTML = content.head;
           document.getElementById('t-desc').innerText = content.desc;
-          gsap.fromTo(secContainer, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" });
+          gsap.fromTo(secContainer, { opacity: 0, x: 50 }, { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" });
         }
       });
     }
   }
 });
 
-// ─────────────────────────────────────────────────────────────────
-// CINEMATIC RENDER LOOP
-// ─────────────────────────────────────────────────────────────────
 const clock = new THREE.Clock();
 function lerp(start, end, amt) { return (1 - amt) * start + amt * end; }
 
@@ -415,8 +441,6 @@ function animate() {
   const targetCamX = lerp(0, -15, p);
   const targetCamY = lerp(40, 3, p);
   const targetCamZ = lerp(50, 15, p);
-  
-  // Quick jump if rendering first frame to avoid camera flying from 0 on load
   camera.position.lerp(new THREE.Vector3(targetCamX, targetCamY, targetCamZ), time < 0.1 ? 1 : 0.04);
 
   const targetLookX = lerp(0, 10, p);
