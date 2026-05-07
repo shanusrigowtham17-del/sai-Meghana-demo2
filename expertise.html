@@ -1,167 +1,203 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Sai Meghana Technical Consultants LLP — Engineering Excellence</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;600&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
-<!-- GSAP for Cinematic Scroll -->
+<title>Expertise | Sai Meghana Technical Consultants LLP</title>
+<meta name="description" content="Cinematic industrial expertise, structural engineering, and technical consultancy portfolio.">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;700&family=JetBrains+Mono:wght@100;400;700&display=swap" rel="stylesheet">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          navy: '#001229',
+          midnight: '#002244',
+          cyan: { 400: '#00adef', 500: '#008bbf' },
+          glass: 'rgba(255, 255, 255, 0.03)',
+          glassBorder: 'rgba(255, 255, 255, 0.08)'
+        },
+        fontFamily: {
+          sans: ['"DM Sans"', 'sans-serif'],
+          serif: ['"Playfair Display"', 'serif'],
+          mono: ['"JetBrains Mono"', 'monospace'],
+        },
+        backgroundImage: {
+          'radial-glow': 'radial-gradient(circle at center, var(--tw-gradient-stops))',
+          'scanlines': 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 173, 239, 0.05) 2px, rgba(0, 173, 239, 0.05) 4px)'
+        }
+      }
+    }
+  }
+</script>
+
+<!-- Core Animation & 3D Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-<!-- Three.js -->
+<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
   :root {
-    --deep-navy: #001229;
-    --midnight-blue: #002244;
-    --cyan: #00adef;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background-color: var(--midnight-blue);
-    color: #ffffff;
-    font-family: 'DM Sans', sans-serif;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
+    --cyan-glow: 0 0 30px rgba(0, 173, 239, 0.4);
+    --cyan-glow-intense: 0 0 50px rgba(0, 173, 239, 0.7);
   }
   
-  /* 3D Canvas Container */
-  #webgl-container {
+  body {
+    background-color: #001229;
+    color: #ffffff;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Lenis Standard Setup */
+  html.lenis { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+  .lenis.lenis-stopped { overflow: hidden; }
+
+  /* WebGL Engine */
+  #webgl-canvas {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 0;
+    z-index: 0; /* Base layer */
     pointer-events: none;
   }
 
-  /* Spatial UI Overlays */
-  .ui-layer {
+  /* Grain & Scanner Overlay */
+  .vfx-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 10;
+    inset: 0;
+    z-index: 1;
     pointer-events: none;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 3rem 4rem;
+    mix-blend-mode: overlay;
+    opacity: 0.4;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   }
 
-  /* Header & Navigation */
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    pointer-events: auto;
+  .scanlines {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
   }
-  .brand { display: flex; align-items: center; gap: 1.2rem; }
-  .logo-box {
-    width: 68px;
-    height: 68px;
-    border: 2px solid white;
+
+  /* Content Wrapper */
+  #smooth-wrapper {
+    position: relative;
+    z-index: 10; /* Above WebGL and VFX */
+  }
+
+  /* Premium Glassmorphism */
+  .glass-panel {
+    background: rgba(0, 18, 41, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .holographic-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(0,173,239,0.02) 100%);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(0, 173, 239, 0.15);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-style: preserve-3d;
+  }
+  
+  .holographic-card:hover {
+    background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(0,173,239,0.1) 100%);
+    border-color: rgba(0, 173, 239, 0.6);
+    box-shadow: var(--cyan-glow);
+  }
+
+  /* Cinematic Text Utilities */
+  .text-glow { text-shadow: 0 0 25px rgba(0, 173, 239, 0.6); }
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.2);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #001229; }
+  ::-webkit-scrollbar-thumb { background: rgba(0, 173, 239, 0.4); border-radius: 10px; }
+
+  /* Parallax Container Rules */
+  .horizontal-scroll-wrapper {
+    display: flex;
+    width: 400vw; /* 4 panels */
+    height: 100vh;
+    will-change: transform;
+  }
+  
+  .panel {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 3px;
-    background: rgba(0, 34, 68, 0.4);
-    backdrop-filter: blur(4px);
-  }
-  .brand-text h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: 0.15em; }
-  .brand-text p { font-size: 0.65rem; font-weight: 600; color: var(--cyan); letter-spacing: 0.12em; margin-top: 4px;}
-  
-  nav { display: flex; gap: 2.5rem; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; }
-  nav a {
-    color: #ffffff;
-    text-decoration: none;
-    transition: color 0.3s ease;
-  }
-  nav a:hover { color: var(--cyan); }
-  nav a.active { color: var(--cyan); pointer-events: none; }
-
-  /* Main Cinematic Content */
-  .content-container {
-    max-width: 700px;
-    margin-top: -5vh; /* Optical centering */
-  }
-  .phase-label {
-    font-family: monospace;
-    color: var(--cyan);
-    letter-spacing: 0.3em;
-    font-size: 0.85rem;
-    margin-bottom: 1.5rem;
-    text-transform: uppercase;
-  }
-  h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2.5rem, 5vw, 4.5rem);
-    font-weight: 300;
-    line-height: 1.1;
-    margin-bottom: 1.5rem;
-  }
-  p.desc {
-    font-size: 1.1rem;
-    font-weight: 300;
-    color: #cbd5e1;
-    line-height: 1.8;
-    max-width: 550px;
   }
 
-  /* Telemetry Footer */
-  footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+  .panel-img-wrapper {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    border-top: 1px solid rgba(255,255,255,0.15);
-    padding-top: 1.5rem;
-    font-family: monospace;
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
+    height: 100%;
+    overflow: hidden;
   }
-  .telemetry-left { color: #888; line-height: 1.8; }
-  .telemetry-left span { color: var(--cyan); }
-  .telemetry-right { display: flex; gap: 4rem; }
-  .t-block { display: flex; flex-direction: column; }
-  .t-block .lbl { color: #666; margin-bottom: 6px; }
 
-  /* Invisible Scroll Proxy to drive GSAP */
-  #scroll-proxy { height: 500vh; position: absolute; top: 0; width: 100%; z-index: -1; }
+  .panel-img {
+    position: absolute;
+    top: 0;
+    left: -10vw; /* Buffer for parallax */
+    width: 120vw;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.4;
+    will-change: transform;
+    filter: grayscale(80%) contrast(1.2);
+    transition: filter 0.8s ease, opacity 0.8s ease;
+  }
 
-  /* 📱 MOBILE RESPONSIVENESS */
-  @media (max-width: 768px) {
-    .ui-layer { padding: 1.5rem; }
-    header { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
-    .logo-box { width: 50px; height: 50px; }
-    .brand-text h1 { font-size: 1.1rem; }
-    .brand-text p { font-size: 0.55rem; }
-    nav { gap: 1rem; flex-wrap: wrap; }
-    
-    .content-container { margin-top: 5vh; }
-    h2 { font-size: 2.2rem; margin-bottom: 1rem; }
-    p.desc { font-size: 0.95rem; }
-    
-    footer { flex-direction: column; align-items: flex-start; gap: 1.5rem; font-size: 0.65rem; padding-top: 1rem; }
-    .telemetry-right { gap: 2rem; width: 100%; }
+  .panel:hover .panel-img {
+    filter: grayscale(0%) contrast(1.1);
+    opacity: 0.6;
+  }
+
+  /* Clip-path Reveal */
+  .reveal-clip {
+    clip-path: inset(0 100% 0 0);
   }
 </style>
 </head>
-<body>
+<body class="selection:bg-cyan-400 selection:text-navy">
 
-<!-- The 3D World -->
-<div id="webgl-container"></div>
+<!-- VFX Layers -->
+<canvas id="webgl-canvas"></canvas>
+<div class="vfx-overlay"></div>
+<div class="scanlines bg-scanlines"></div>
 
-<!-- The UI Overlay -->
-<div class="ui-layer">
-  <header>
-    <div class="brand">
-      <div class="logo-box">
-        <svg viewBox="0 0 200 130" fill="none" style="width: 80%; height: 80%;">
+<!-- Navigation -->
+<nav class="fixed top-0 w-full z-[100] glass-panel border-b-0 border-white/5 transition-all duration-500" id="navbar">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12 h-24 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-4 group">
+      <div class="w-14 h-14 border border-white/20 flex items-center justify-center rounded bg-navy/50 backdrop-blur-md group-hover:border-cyan-400 transition-colors shadow-[0_0_15px_rgba(0,173,239,0.1)] group-hover:shadow-[0_0_25px_rgba(0,173,239,0.4)]">
+        <svg viewBox="0 0 200 130" fill="none" class="w-3/4 h-3/4 transition-transform group-hover:scale-110 duration-500">
           <g transform="translate(100, 5)">
             <polygon points="0,0 22,25 0,16" fill="#ffffff" stroke="#002147" stroke-width="2"/>
             <polygon points="0,0 -22,25 0,16" fill="#00adef" stroke="#002147" stroke-width="2"/>
@@ -172,274 +208,575 @@
           </g>
         </svg>
       </div>
-      <div class="brand-text">
-        <h1>SAI MEGHANA</h1>
-        <p>TECHNICAL CONSULTANTS</p>
+      <div>
+        <h1 class="font-sans text-xl font-bold tracking-[0.2em] text-white">SAI MEGHANA</h1>
+        <p class="font-sans text-[0.65rem] font-semibold tracking-[0.15em] text-cyan-400 mt-1">TECHNICAL CONSULTANTS</p>
+      </div>
+    </a>
+    
+    <div class="hidden md:flex gap-10 font-sans text-xs font-bold tracking-[0.15em]">
+      <a href="index.html" class="text-white/50 hover:text-white transition-colors relative group">
+        HOME<span class="absolute -bottom-2 left-0 w-0 h-[2px] bg-cyan-400 transition-all duration-300 group-hover:w-full"></span>
+      </a>
+      <a href="services.html" class="text-white/50 hover:text-white transition-colors relative group">
+        SERVICES<span class="absolute -bottom-2 left-0 w-0 h-[2px] bg-cyan-400 transition-all duration-300 group-hover:w-full"></span>
+      </a>
+      <!-- Active State -->
+      <a href="expertise.html" class="text-cyan-400 relative">
+        EXPERTISE<span class="absolute -bottom-2 left-0 w-full h-[2px] bg-cyan-400 shadow-[0_0_10px_rgba(0,173,239,0.8)]"></span>
+      </a>
+      <a href="about.html" class="text-white/50 hover:text-white transition-colors relative group">
+        ABOUT<span class="absolute -bottom-2 left-0 w-0 h-[2px] bg-cyan-400 transition-all duration-300 group-hover:w-full"></span>
+      </a>
+      <a href="contact.html" class="text-white/50 hover:text-white transition-colors relative group">
+        CONTACT<span class="absolute -bottom-2 left-0 w-0 h-[2px] bg-cyan-400 transition-all duration-300 group-hover:w-full"></span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main id="smooth-wrapper">
+  
+  <!-- 1. CINEMATIC HERO EXPERIENCE -->
+  <section class="relative w-full h-[120vh] flex flex-col items-center justify-center pt-20" id="hero-section">
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-navy z-0"></div>
+    
+    <!-- Hero Content -->
+    <div class="max-w-7xl mx-auto px-6 lg:px-12 w-full z-10 text-center flex flex-col items-center">
+      
+      <!-- Holographic HUD Tag -->
+      <div class="hero-anim opacity-0 translate-y-10 inline-flex items-center gap-4 px-5 py-2 border border-cyan-400/40 rounded-full bg-cyan-400/5 backdrop-blur-md mb-8 shadow-[0_0_20px_rgba(0,173,239,0.15)] relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent translate-x-[-100%] animate-[shimmer_2s_infinite]"></div>
+        <span class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_10px_#00adef]"></span>
+        <span class="font-mono text-[0.65rem] tracking-[0.3em] text-cyan-400 uppercase">System Intelligence // Archive</span>
+      </div>
+
+      <!-- Monumental Typography -->
+      <h1 class="hero-anim opacity-0 translate-y-10 font-serif text-[4rem] md:text-[6rem] lg:text-[8vw] leading-[0.9] font-light tracking-tight text-white mb-6 mix-blend-screen relative">
+        <span class="block text-outline">Industrial</span>
+        <span class="block italic text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-cyan-400 text-glow relative z-10">Manifestation</span>
+      </h1>
+      
+      <p class="hero-anim opacity-0 translate-y-10 font-sans text-lg md:text-xl font-light text-white/50 max-w-2xl leading-relaxed mb-16">
+        A cinematic visual documentation of multi-million dollar structural execution, precision engineering, and infrastructural dominance.
+      </p>
+
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="hero-anim opacity-0 absolute bottom-32 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-10">
+      <span class="font-mono text-[0.6rem] tracking-[0.3em] text-cyan-400 uppercase rotate-90 mb-8">Initiate Sequence</span>
+      <div class="w-[1px] h-24 bg-white/10 relative overflow-hidden">
+        <div class="w-full h-1/2 bg-cyan-400 absolute top-0 left-0 animate-[scroll-drop_1.5s_ease-in-out_infinite] shadow-[0_0_15px_#00adef]"></div>
       </div>
     </div>
-    <!-- REAL MULTI-PAGE HTML NAVIGATION LINKS -->
-    <nav>
-      <a href="index.html" id="link-index">HOME</a>
-      <a href="services.html" id="link-services">SERVICES</a>
-      <a href="expertise.html" id="link-expertise">EXPERTISE</a>
-      <a href="about.html" id="link-about">ABOUT</a>
-      <a href="contact.html" id="link-contact">CONTACT</a>
-    </nav>
-  </header>
+  </section>
 
-  <div class="content-container" id="sec-content">
-    <div class="phase-label" id="t-sub">PHASE I — BLUEPRINT VOID</div>
-    <h2 id="t-head">ENGINEERING<br>EXCELLENCE</h2>
-    <p class="desc" id="t-desc">A digital twin of futuristic industrial potential. We architect the unseen.</p>
-  </div>
+  <!-- 2. IMMERSIVE EXPERTISE TIMELINE (HORIZONTAL PINNED SCROLL) -->
+  <section id="horizontal-timeline" class="relative bg-navy z-20">
+    <div class="horizontal-scroll-wrapper">
+      
+      <!-- Panel 1: Architectural Foundation -->
+      <div class="panel">
+        <div class="panel-img-wrapper reveal-clip">
+          <div class="absolute inset-0 bg-navy/60 z-10"></div>
+          <!-- Proxy Image representing complex CAD/Architectural blueprints overlaid on site -->
+          <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=2500&auto=format&fit=crop" class="panel-img" data-speed="-0.3" alt="Architectural Planning">
+        </div>
+        <div class="relative z-20 max-w-7xl mx-auto px-6 lg:px-12 w-full flex flex-col md:flex-row items-center gap-12">
+          <div class="md:w-1/2">
+            <span class="font-mono text-cyan-400 text-xs tracking-[0.3em] uppercase block mb-6">Phase 01 / Spatial Orchestration</span>
+            <h2 class="font-serif text-5xl md:text-7xl font-light text-white mb-6 leading-tight">Master <br><span class="italic text-cyan-400">Layouts</span></h2>
+            <p class="font-sans text-white/60 text-lg font-light leading-relaxed max-w-lg">
+              Precision CAD telemetry translated into physical reality. We architect the unseen geometry that dictates operational flow, safety parameters, and structural lifespan.
+            </p>
+          </div>
+          <div class="md:w-1/2 flex justify-center">
+            <!-- Glass Data Box -->
+            <div class="holographic-card p-8 rounded-xl border border-cyan-400/20 max-w-sm backdrop-blur-xl">
+              <div class="flex justify-between items-end border-b border-white/10 pb-4 mb-4">
+                <span class="font-mono text-xs text-white/40 tracking-widest">TOLERANCE DELTA</span>
+                <span class="font-mono text-xl text-cyan-400">±0.05mm</span>
+              </div>
+              <p class="font-sans text-sm text-white/70">Blueprint-to-site structural mapping accuracy recorded across 11+ years of deployment.</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  <footer>
-    <div class="telemetry-left">
-      SYSTEM_STATE: <span>NOMINAL</span><br>
-      LOC: HYDERABAD, TS<br>
-      EST: 2+ YRS
+      <!-- Panel 2: Heavy Machinery Foundations -->
+      <div class="panel">
+        <div class="panel-img-wrapper reveal-clip">
+          <div class="absolute inset-0 bg-navy/60 z-10"></div>
+          <!-- Proxy Image representing heavy concrete foundation construction -->
+          <img src="https://images.unsplash.com/photo-1541888086925-920a0b63b2f2?q=80&w=2500&auto=format&fit=crop" class="panel-img" data-speed="-0.3" alt="Heavy Foundations">
+        </div>
+        <div class="relative z-20 max-w-7xl mx-auto px-6 lg:px-12 w-full flex flex-col md:flex-row items-center gap-12">
+          <div class="md:w-1/2 order-2 md:order-1 flex justify-center">
+            <div class="w-64 h-64 border-[0.5px] border-cyan-400/30 rounded-full flex items-center justify-center relative spin-slow">
+              <div class="w-48 h-48 border border-dashed border-white/20 rounded-full spin-reverse"></div>
+              <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,173,239,0.1),transparent_70%)]"></div>
+              <span class="absolute font-mono text-xs text-cyan-400 tracking-widest bg-navy px-2">DYNAMIC LOAD</span>
+            </div>
+          </div>
+          <div class="md:w-1/2 order-1 md:order-2 text-right">
+            <span class="font-mono text-cyan-400 text-xs tracking-[0.3em] uppercase block mb-6">Phase 02 / Kinetic Anchorage</span>
+            <h2 class="font-serif text-5xl md:text-7xl font-light text-white mb-6 leading-tight">Machine <br><span class="italic text-cyan-400">Foundations</span></h2>
+            <p class="font-sans text-white/60 text-lg font-light leading-relaxed ml-auto max-w-lg">
+              Isolating extreme vibrations. Our heavy machine foundations are mathematically engineered to anchor multi-ton turbines and presses, nullifying resonant frequencies.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 3: RCC & Steel Structures -->
+      <div class="panel">
+        <div class="panel-img-wrapper reveal-clip">
+          <div class="absolute inset-0 bg-navy/60 z-10"></div>
+          <!-- Proxy Image representing expansive steel/concrete framework -->
+          <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=2500&auto=format&fit=crop" class="panel-img" data-speed="-0.3" alt="RCC Structures">
+        </div>
+        <div class="relative z-20 max-w-7xl mx-auto px-6 lg:px-12 w-full flex flex-col md:flex-row items-center gap-12">
+          <div class="md:w-1/2">
+            <span class="font-mono text-cyan-400 text-xs tracking-[0.3em] uppercase block mb-6">Phase 03 / Vertical Growth</span>
+            <h2 class="font-serif text-5xl md:text-7xl font-light text-white mb-6 leading-tight">Structural <br><span class="italic text-cyan-400">Steel & RCC</span></h2>
+            <p class="font-sans text-white/60 text-lg font-light leading-relaxed max-w-lg">
+              The skeletal integrity of industry. We execute massive monolithic RCC frameworks and Pre-Engineered Buildings capable of surviving extreme operational environments.
+            </p>
+          </div>
+          <div class="md:w-1/2 grid grid-cols-2 gap-4">
+             <div class="glass-panel p-6 border border-white/10 hover:border-cyan-400/50 transition-colors">
+               <div class="font-serif text-3xl text-white mb-2">IS 456</div>
+               <div class="font-mono text-[0.6rem] text-cyan-400 tracking-widest">CODE COMPLIANCE</div>
+             </div>
+             <div class="glass-panel p-6 border border-white/10 hover:border-cyan-400/50 transition-colors">
+               <div class="font-serif text-3xl text-white mb-2">PEB</div>
+               <div class="font-mono text-[0.6rem] text-cyan-400 tracking-widest">LARGE SPAN ARCHITECTURE</div>
+             </div>
+             <div class="glass-panel p-6 border border-white/10 hover:border-cyan-400/50 transition-colors col-span-2">
+               <div class="font-serif text-3xl text-white mb-2">100%</div>
+               <div class="font-mono text-[0.6rem] text-cyan-400 tracking-widest">NON-DESTRUCTIVE TESTING VERIFIED</div>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 4: Site Supervision -->
+      <div class="panel">
+        <div class="panel-img-wrapper reveal-clip">
+          <div class="absolute inset-0 bg-navy/60 z-10"></div>
+          <!-- Proxy Image representing engineers surveying/inspecting -->
+          <img src="https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?q=80&w=2500&auto=format&fit=crop" class="panel-img" data-speed="-0.3" alt="Site Supervision">
+        </div>
+        <div class="relative z-20 max-w-7xl mx-auto px-6 lg:px-12 w-full flex flex-col md:flex-row items-center justify-between gap-12">
+          <div class="w-full text-center">
+            <span class="font-mono text-cyan-400 text-xs tracking-[0.3em] uppercase block mb-6">Phase 04 / Command & Control</span>
+            <h2 class="font-serif text-[4rem] md:text-[6rem] font-light text-white mb-6 leading-tight">Site <span class="italic text-cyan-400">Supervision</span></h2>
+            <p class="font-sans text-white/60 text-lg font-light leading-relaxed max-w-2xl mx-auto">
+              Absolute authority over physical execution. Our consultancy embeds directly into the construction lifecycle, enforcing vendor compliance, material analytics, and timeline orchestration.
+            </p>
+          </div>
+        </div>
+      </div>
+
     </div>
-    <div class="telemetry-right">
-      <div class="t-block"><span class="lbl">SCROLL</span><span style="color: white">TO EVOLVE</span></div>
-      <div class="t-block"><span class="lbl">PHASE</span><span style="color: white" id="t-phase">01 / 05</span></div>
+  </section>
+
+  <!-- 3. FLOATING IMAGE WALL (3D PARALLAX DEPTH) -->
+  <section class="py-32 md:py-48 bg-navy relative z-20 overflow-hidden" id="floating-gallery">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-midnight via-navy to-navy"></div>
+    
+    <div class="max-w-7xl mx-auto px-6 lg:px-12 relative z-10 text-center mb-24">
+      <span class="font-mono text-cyan-400 text-xs tracking-[0.3em] uppercase mb-4 block">Visual Archive</span>
+      <h2 class="font-serif text-4xl md:text-6xl font-light text-white">Engineering <span class="italic text-cyan-400">Artifacts</span></h2>
+    </div>
+
+    <div class="relative w-full h-[150vh] max-w-[1400px] mx-auto perspective-container" style="perspective: 1500px;">
+      
+      <!-- Center Image -->
+      <div class="float-img absolute top-[20%] left-1/2 -translate-x-1/2 w-[80vw] md:w-[600px] holographic-card p-2 group" data-speed="0.8">
+        <div class="overflow-hidden relative w-full h-[400px]">
+          <div class="absolute inset-0 bg-cyan-400/20 mix-blend-overlay group-hover:opacity-0 transition-opacity duration-500 z-10"></div>
+          <img src="https://images.unsplash.com/photo-1587293852726-70cdb56c2866?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover transform scale-110 group-hover:scale-100 transition-transform duration-700" alt="Industrial Sheds">
+        </div>
+        <div class="absolute bottom-6 left-6 z-20 bg-navy/80 backdrop-blur px-4 py-2 border-l-2 border-cyan-400">
+          <span class="font-mono text-[0.6rem] text-white tracking-widest">01 // INDUSTRIAL SHEDS</span>
+        </div>
+      </div>
+
+      <!-- Left Image 1 -->
+      <div class="float-img absolute top-[40%] left-[5%] w-[45vw] md:w-[350px] holographic-card p-2 group" data-speed="1.2">
+        <div class="overflow-hidden relative w-full h-[300px]">
+          <div class="absolute inset-0 bg-cyan-400/20 mix-blend-overlay group-hover:opacity-0 transition-opacity duration-500 z-10"></div>
+          <img src="https://images.unsplash.com/photo-1508450859948-4e04fabaa4ea?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transform scale-110 group-hover:scale-100 transition-transform duration-700" alt="Utility Infrastructure">
+        </div>
+        <div class="absolute bottom-6 left-6 z-20 bg-navy/80 backdrop-blur px-4 py-2 border-l-2 border-cyan-400">
+          <span class="font-mono text-[0.6rem] text-white tracking-widest">02 // INFRASTRUCTURE</span>
+        </div>
+      </div>
+
+      <!-- Right Image 1 -->
+      <div class="float-img absolute top-[10%] right-[5%] w-[40vw] md:w-[300px] holographic-card p-2 group" data-speed="0.5">
+        <div class="overflow-hidden relative w-full h-[250px]">
+          <div class="absolute inset-0 bg-cyan-400/20 mix-blend-overlay group-hover:opacity-0 transition-opacity duration-500 z-10"></div>
+          <img src="https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transform scale-110 group-hover:scale-100 transition-transform duration-700" alt="Quality Inspection">
+        </div>
+        <div class="absolute bottom-6 right-6 z-20 bg-navy/80 backdrop-blur px-4 py-2 border-r-2 border-cyan-400 text-right">
+          <span class="font-mono text-[0.6rem] text-white tracking-widest">03 // QUALITY ASSURANCE</span>
+        </div>
+      </div>
+
+      <!-- Bottom Right Image -->
+      <div class="float-img absolute top-[60%] right-[10%] w-[50vw] md:w-[450px] holographic-card p-2 group" data-speed="1.5">
+        <div class="overflow-hidden relative w-full h-[350px]">
+          <div class="absolute inset-0 bg-cyan-400/20 mix-blend-overlay group-hover:opacity-0 transition-opacity duration-500 z-10"></div>
+          <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover transform scale-110 group-hover:scale-100 transition-transform duration-700" alt="RCC Construction">
+        </div>
+        <div class="absolute bottom-6 left-6 z-20 bg-navy/80 backdrop-blur px-4 py-2 border-l-2 border-cyan-400">
+          <span class="font-mono text-[0.6rem] text-white tracking-widest">04 // HEAVY RCC</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 4. FUTURISTIC TECH DASHBOARD -->
+  <section class="py-32 relative bg-navy/90 border-y border-white/5 z-20 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="glass-panel border border-cyan-400/20 rounded-2xl p-8 md:p-16 relative overflow-hidden shadow-[0_0_50px_rgba(0,173,239,0.05)]">
+        
+        <!-- Glowing Ambient Orbs inside dashboard -->
+        <div class="absolute top-0 right-0 w-96 h-96 bg-cyan-400/10 rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-[80px] pointer-events-none"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 relative z-10">
+          
+          <div>
+            <span class="font-mono text-cyan-400 text-xs tracking-[0.3em] uppercase mb-4 block">Telemetry Node</span>
+            <h2 class="font-serif text-4xl md:text-5xl font-light text-white mb-6">Operational <span class="italic text-cyan-400">Excellence</span></h2>
+            <p class="font-sans text-white/50 font-light leading-relaxed mb-12">
+              Beyond physical structures, our consultancy manages the digital and logistical lifecycle of construction. We ensure absolute adherence to engineering blueprints, financial models, and safety protocols.
+            </p>
+
+            <!-- Animated Tech List -->
+            <div class="space-y-6">
+              <div class="tech-row flex items-center justify-between border-b border-white/10 pb-4">
+                <span class="font-mono text-sm text-white/80">VENDOR SELECTION & TENDERING</span>
+                <span class="text-cyan-400">✓</span>
+              </div>
+              <div class="tech-row flex items-center justify-between border-b border-white/10 pb-4">
+                <span class="font-mono text-sm text-white/80">BILL OF QUANTITIES (BOQ) PREP</span>
+                <span class="text-cyan-400">✓</span>
+              </div>
+              <div class="tech-row flex items-center justify-between border-b border-white/10 pb-4">
+                <span class="font-mono text-sm text-white/80">STRUCTURAL COMPLIANCE AUDITS</span>
+                <span class="text-cyan-400">✓</span>
+              </div>
+              <div class="tech-row flex items-center justify-between border-b border-white/10 pb-4">
+                <span class="font-mono text-sm text-white/80">MATERIAL TESTING VERIFICATION</span>
+                <span class="text-cyan-400">✓</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Graphic/Chart Representation -->
+          <div class="relative flex items-center justify-center h-[400px] border border-white/5 bg-midnight/50 rounded-xl overflow-hidden group">
+            <div class="absolute inset-0 bg-scanlines opacity-50"></div>
+            
+            <!-- Center Ring -->
+            <div class="w-48 h-48 border border-cyan-400/30 rounded-full flex items-center justify-center relative">
+              <div class="absolute w-full h-full border-t-2 border-cyan-400 rounded-full animate-spin"></div>
+              <div class="w-32 h-32 border border-white/20 rounded-full flex flex-col items-center justify-center bg-navy/80 backdrop-blur-sm z-10 shadow-[0_0_20px_rgba(0,173,239,0.2)]">
+                <span class="font-serif text-3xl text-white">100<span class="text-cyan-400">%</span></span>
+                <span class="font-mono text-[0.5rem] tracking-[0.2em] text-white/50">DELIVERY</span>
+              </div>
+              
+              <!-- Nodes -->
+              <div class="absolute -top-4 -right-4 w-16 h-8 bg-cyan-400/10 border border-cyan-400/40 rounded flex items-center justify-center font-mono text-[0.5rem] text-cyan-400 tracking-widest backdrop-blur-md">QA/QC</div>
+              <div class="absolute -bottom-4 -left-4 w-16 h-8 bg-cyan-400/10 border border-cyan-400/40 rounded flex items-center justify-center font-mono text-[0.5rem] text-cyan-400 tracking-widest backdrop-blur-md">E2E</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. IMMERSIVE CTA -->
+  <section class="relative py-32 md:py-48 overflow-hidden bg-navy z-20">
+    <div class="absolute inset-0 bg-gradient-to-t from-midnight to-transparent"></div>
+    <div class="max-w-4xl mx-auto px-6 lg:px-12 relative z-10 text-center flex flex-col items-center">
+      
+      <div class="w-[1px] h-24 bg-gradient-to-b from-transparent to-cyan-400 mb-8"></div>
+      
+      <h2 class="font-serif text-5xl md:text-7xl font-light text-white mb-6">
+        Initialize <span class="italic text-cyan-400 text-glow">Project.</span>
+      </h2>
+      <p class="font-sans text-white/50 font-light text-lg mb-12 max-w-xl">
+        Bypass standard consultancy. Partner with engineering intelligence capable of executing your most demanding industrial frameworks.
+      </p>
+
+      <a href="contact.html" class="group relative px-12 py-5 bg-transparent overflow-hidden">
+        <div class="absolute inset-0 border border-cyan-400/50 bg-cyan-400/5 backdrop-blur-sm group-hover:bg-cyan-400 transition-colors duration-500"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <span class="relative z-10 font-mono text-sm font-bold tracking-[0.2em] text-cyan-400 group-hover:text-navy transition-colors duration-500 flex items-center gap-4">
+          TRANSMIT REQUIREMENTS 
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4 group-hover:translate-x-2 transition-transform"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-midnight border-t border-white/10 py-12 relative z-20">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-8">
+      <div class="flex items-center gap-4 group">
+        <div class="w-10 h-10 border border-white/20 flex items-center justify-center rounded bg-navy group-hover:border-cyan-400 transition-colors">
+          <svg viewBox="0 0 200 130" fill="none" class="w-3/4 h-3/4"><g transform="translate(100, 5)"><polygon points="0,0 22,25 0,16" fill="#ffffff" stroke="#002147" stroke-width="2"/><polygon points="0,0 -22,25 0,16" fill="#00adef" stroke="#002147" stroke-width="2"/><polygon points="0,11 44,48 0,33" fill="#ffffff" stroke="#002147" stroke-width="2"/><polygon points="0,11 -44,48 0,33" fill="#00adef" stroke="#002147" stroke-width="2"/><polygon points="0,22 66,71 0,50" fill="#ffffff" stroke="#002147" stroke-width="2"/><polygon points="0,22 -66,71 0,50" fill="#00adef" stroke="#002147" stroke-width="2"/></g></svg>
+        </div>
+        <span class="font-sans text-sm font-bold tracking-[0.2em] text-white">SAI MEGHANA</span>
+      </div>
+      <div class="font-mono text-[0.65rem] text-white/40 tracking-[0.2em] text-center md:text-right leading-relaxed">
+        EST. 11+ YRS // HYDERABAD, TS // GST REGISTERED <br>
+        &copy; 2026 SAI MEGHANA TECHNICAL CONSULTANTS LLP
+      </div>
     </div>
   </footer>
-</div>
 
-<!-- Invisible div to create scrollbar -->
-<div id="scroll-proxy"></div>
+</main>
 
 <script>
-'use strict';
-
-// ─────────────────────────────────────────────────────────────────
-// SMART ROUTER & UI CONTENT DATA
-// ─────────────────────────────────────────────────────────────────
-const uiContent = [
-  { id: "index", sub: "PHASE I — BLUEPRINT VOID", head: "ENGINEERING<br>EXCELLENCE", desc: "A digital twin of futuristic industrial potential. We architect the unseen." },
-  { id: "services", sub: "PHASE II — ROBOTIC CONSTRUCTION", head: "DYNAMIC<br>ASSEMBLY", desc: "Procedural structural growth. Heavy machine foundations and internal utilities emerge." },
-  { id: "expertise", sub: "PHASE III — STEEL & CONCRETE", head: "STRUCTURAL<br>GROWTH", desc: "Silos, chimneys, and industrial sheds assemble. The architecture of industry takes physical form." },
-  { id: "about", sub: "PHASE IV — TELEMETRY", head: "INDUSTRIAL<br>INTELLIGENCE", desc: "Data visualization architecture. Monitoring vendor selection, contract management, and site supervision." },
-  { id: "contact", sub: "PHASE V — COMPLETE", head: "SAI MEGHANA<br>LLP", desc: "2+ years of precision, integrity, and engineering authority in Hyderabad, Telangana." }
-];
-
-// Detect which page the user is currently on
-const path = window.location.pathname.toLowerCase();
-let startPhase = 0;
-if (path.includes('services')) startPhase = 1;
-else if (path.includes('expertise')) startPhase = 2;
-else if (path.includes('about')) startPhase = 3;
-else if (path.includes('contact')) startPhase = 4;
-
-// Highlight the active navigation link
-document.getElementById(`link-${uiContent[startPhase].id}`).classList.add('active');
-
-// Pre-fill HTML with the correct page data instantly to prevent flickering
-const initialContent = uiContent[startPhase];
-document.getElementById('t-sub').innerText = initialContent.sub;
-document.getElementById('t-head').innerHTML = initialContent.head;
-document.getElementById('t-desc').innerText = initialContent.desc;
-document.getElementById('t-phase').innerText = `0${startPhase + 1} / 05`;
-
-// Auto-Scroll the invisible proxy so the 3D engine knows where to start
-window.addEventListener('load', () => {
-  if (startPhase > 0) {
-    const totalScroll = document.body.scrollHeight - window.innerHeight;
-    window.scrollTo(0, (startPhase / 4) * totalScroll);
-  }
+// =========================================================================
+// 1. LENIS SMOOTH SCROLL (God-Tier Smoothness)
+// =========================================================================
+const lenis = new Lenis({
+  duration: 1.5, // Cinematic heavy feel
+  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+  smoothWheel: true,
+  wheelMultiplier: 0.8,
 });
+function raf(time) {
+  lenis.raf(time);
+  requestAnimationFrame(raf);
+}
+requestAnimationFrame(raf);
 
-// ─────────────────────────────────────────────────────────────────
-// THREE.JS ENGINE SETUP
-// ─────────────────────────────────────────────────────────────────
-const container = document.getElementById('webgl-container');
+// =========================================================================
+// 2. THREE.JS CINEMATIC WEBGL BACKGROUND
+// =========================================================================
+const canvas = document.getElementById('webgl-canvas');
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#002244');
-scene.fog = new THREE.FogExp2('#002244', 0.015);
+scene.fog = new THREE.FogExp2('#001229', 0.015);
 
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.z = 40;
 
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-container.appendChild(renderer.domElement);
 
-// Lighting
-scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
-dirLight.position.set(30, 50, -20);
-dirLight.castShadow = true;
-scene.add(dirLight);
+// Engineering Geometry
+const geometryGroup = new THREE.Group();
+scene.add(geometryGroup);
 
-const spotLight = new THREE.SpotLight('#00adef', 3);
-spotLight.position.set(-20, 20, 20);
-scene.add(spotLight);
+// Create a massive wireframe "Data Hub"
+const geoHub = new THREE.IcosahedronGeometry(25, 2);
+const matHub = new THREE.MeshBasicMaterial({ color: 0x00adef, wireframe: true, transparent: true, opacity: 0.03 });
+const meshHub = new THREE.Mesh(geoHub, matHub);
+geometryGroup.add(meshHub);
 
-// ─────────────────────────────────────────────────────────────────
-// CUSTOM GLSL SHADER: BLUEPRINT HOLOGRAM
-// ─────────────────────────────────────────────────────────────────
-const blueprintMaterial = new THREE.ShaderMaterial({
-  uniforms: {
-    time: { value: 0 },
-    uColor: { value: new THREE.Color('#00adef') },
-    uProgress: { value: 0.0 }
-  },
-  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-  vertexShader: `
-    varying vec2 vUv; varying vec3 vPos;
-    void main() { vUv = uv; vPos = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
-  `,
-  fragmentShader: `
-    uniform float time; uniform vec3 uColor; uniform float uProgress;
-    varying vec2 vUv; varying vec3 vPos;
-    void main() {
-      vec2 grid = abs(fract(vUv * 12.0 - 0.5) - 0.5) / fwidth(vUv * 12.0);
-      float line = min(grid.x, grid.y);
-      float scan = sin(vPos.y * 3.0 - time * 2.0) * 0.5 + 0.5;
-      float opacity = ((1.0 - min(line, 1.0)) + scan * 0.5) * (1.0 - uProgress) * 0.8;
-      gl_FragColor = vec4(uColor, opacity);
-    }
-  `
-});
-
-const solidMaterial = new THREE.MeshStandardMaterial({
-  color: 0xffffff, roughness: 0.1, metalness: 0.3, emissive: new THREE.Color('#001229'), emissiveIntensity: 0.2
-});
-
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), new THREE.MeshStandardMaterial({ color: '#001229', roughness: 0.1, metalness: 0.8 }));
-ground.rotation.x = -Math.PI / 2;
-ground.position.y = -0.1;
-ground.receiveShadow = true;
-scene.add(ground);
-
-// ─────────────────────────────────────────────────────────────────
-// PROCEDURAL CAMPUS GENERATION
-// ─────────────────────────────────────────────────────────────────
-const campusGroup = new THREE.Group();
-scene.add(campusGroup);
-const buildings = [];
-const gridSize = 12, spacing = 6;
-
-for(let i=0; i<gridSize * gridSize; i++) {
-  const x = (i % gridSize) - gridSize / 2;
-  const z = Math.floor(i / gridSize) - gridSize / 2;
-  if(Math.abs(x) < 1.5 && Math.abs(z) < 1.5) continue; 
-  
-  const h = Math.random() * 8 + 2;
-  const isSilo = Math.random() > 0.85;
-  const pos = new THREE.Vector3(x * spacing + (Math.random()-0.5)*2, 0, z * spacing + (Math.random()-0.5)*2);
-  const scale = new THREE.Vector3(isSilo ? 1.5 : 2 + Math.random()*2, h, isSilo ? 1.5 : 2 + Math.random()*2);
-  
-  const bldg = new THREE.Group();
-  bldg.position.copy(pos);
-  
-  const geo = isSilo ? new THREE.CylinderGeometry(scale.x, scale.x, 1, 24) : new THREE.BoxGeometry(scale.x, 1, scale.z);
-  geo.translate(0, 0.5, 0); 
-  
-  const bpMesh = new THREE.Mesh(geo, blueprintMaterial);
-  bpMesh.scale.y = scale.y;
-  
-  const solidMesh = new THREE.Mesh(geo, solidMaterial);
-  solidMesh.scale.y = 0.01; 
-  solidMesh.castShadow = solidMesh.receiveShadow = true;
-
-  bldg.add(bpMesh); bldg.add(solidMesh);
-  campusGroup.add(bldg);
-  buildings.push({ bp: bpMesh, solid: solidMesh, targetHeight: scale.y, seed: Math.random() });
-}
-
-// Data Particles
+// Ambient Data Particles
 const partsGeo = new THREE.BufferGeometry();
-const partsPos = [];
-for(let i=0; i<1500; i++) partsPos.push((Math.random()-0.5)*120, Math.random()*30, (Math.random()-0.5)*120);
-partsGeo.setAttribute('position', new THREE.Float32BufferAttribute(partsPos, 3));
-const particleSystem = new THREE.Points(partsGeo, new THREE.PointsMaterial({ color: '#00adef', size: 0.25, transparent: true, opacity: 0.6 }));
-scene.add(particleSystem);
+const partsCount = 2000;
+const posArray = new Float32Array(partsCount * 3);
+for(let i=0; i<partsCount * 3; i++) {
+  posArray[i] = (Math.random() - 0.5) * 150;
+}
+partsGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+const partsMat = new THREE.PointsMaterial({
+  size: 0.15, color: 0x00adef, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending
+});
+const particleMesh = new THREE.Points(partsGeo, partsMat);
+scene.add(particleMesh);
 
-// ─────────────────────────────────────────────────────────────────
-// GSAP SCROLL SYSTEM & STATE
-// ─────────────────────────────────────────────────────────────────
-gsap.registerPlugin(ScrollTrigger);
-const engineState = { scrollProgress: (startPhase / 4) }; // Initialize at correct phase
-let currentPhaseIndex = startPhase;
-
-ScrollTrigger.create({
-  trigger: "#scroll-proxy",
-  start: "top top",
-  end: "bottom bottom",
-  onUpdate: (self) => {
-    engineState.scrollProgress = self.progress;
-    const newPhaseIndex = Math.min(4, Math.floor(self.progress * 5));
-    
-    if (newPhaseIndex !== currentPhaseIndex) {
-      currentPhaseIndex = newPhaseIndex;
-      document.getElementById('t-phase').innerText = `0${currentPhaseIndex + 1} / 05`;
-      
-      const content = uiContent[currentPhaseIndex];
-      const secContainer = document.getElementById('sec-content');
-      
-      gsap.to(secContainer, { 
-        opacity: 0, y: -30, duration: 0.25, ease: "power2.in",
-        onComplete: () => {
-          document.getElementById('t-sub').innerText = content.sub;
-          document.getElementById('t-head').innerHTML = content.head;
-          document.getElementById('t-desc').innerText = content.desc;
-          gsap.fromTo(secContainer, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" });
-        }
-      });
-    }
-  }
+// Mouse Interaction Physics
+let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
+const windowHalfX = window.innerWidth / 2;
+const windowHalfY = window.innerHeight / 2;
+document.addEventListener('mousemove', (e) => {
+  mouseX = (e.clientX - windowHalfX);
+  mouseY = (e.clientY - windowHalfY);
 });
 
-// ─────────────────────────────────────────────────────────────────
-// CINEMATIC RENDER LOOP
-// ─────────────────────────────────────────────────────────────────
+// Sync Scroll with 3D Camera Z-Depth
+let scrollY = 0;
+lenis.on('scroll', (e) => { scrollY = e.scroll; });
+
 const clock = new THREE.Clock();
-function lerp(start, end, amt) { return (1 - amt) * start + amt * end; }
-
-function animate() {
-  requestAnimationFrame(animate);
+function render3D() {
   const time = clock.getElapsedTime();
-  const p = engineState.scrollProgress;
-
-  blueprintMaterial.uniforms.time.value = time;
-  blueprintMaterial.uniforms.uProgress.value = Math.max(0, Math.min(1, (p - 0.1) * 4.0));
-
-  buildings.forEach(b => {
-    const growthProgress = Math.max(0, Math.min(1, (p - 0.25 - b.seed * 0.15) * 3.0));
-    b.solid.scale.y = (1 - Math.pow(1 - growthProgress, 3)) * b.targetHeight + 0.01;
-  });
-
-  const targetCamX = lerp(0, -15, p);
-  const targetCamY = lerp(40, 3, p);
-  const targetCamZ = lerp(50, 15, p);
   
-  // Quick jump if rendering first frame to avoid camera flying from 0 on load
-  camera.position.lerp(new THREE.Vector3(targetCamX, targetCamY, targetCamZ), time < 0.1 ? 1 : 0.04);
-
-  const targetLookX = lerp(0, 10, p);
-  const targetLookY = lerp(0, 8, p);
-  const targetLookZ = lerp(0, -10, p);
+  targetX = mouseX * 0.001;
+  targetY = mouseY * 0.001;
   
-  const currentLookAt = new THREE.Vector3();
-  camera.getWorldDirection(currentLookAt);
-  const targetLookAt = new THREE.Vector3(targetLookX, targetLookY, targetLookZ);
-  camera.lookAt(camera.position.clone().add(currentLookAt.lerp(targetLookAt.sub(camera.position), time < 0.1 ? 1 : 0.04)));
+  // Inertia rotation
+  geometryGroup.rotation.y += 0.02 * (targetX - geometryGroup.rotation.y);
+  geometryGroup.rotation.x += 0.02 * (targetY - geometryGroup.rotation.x);
+  
+  meshHub.rotation.y = time * 0.05;
+  meshHub.rotation.z = time * 0.02;
 
-  scene.fog.density = lerp(0.015, 0.005, p);
-  particleSystem.rotation.y = time * 0.03;
+  particleMesh.position.y = time * 1;
+  if(particleMesh.position.y > 50) particleMesh.position.y = -50;
+
+  // Cinematic Camera Depth based on Scroll
+  const scrollNorm = scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+  camera.position.z = 40 - (scrollNorm * 20); // Move closer as you scroll down
+  camera.position.y = -(scrollNorm * 10); // Slight pan down
+  camera.lookAt(scene.position);
 
   renderer.render(scene, camera);
+  requestAnimationFrame(render3D);
 }
-animate();
+render3D();
 
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
+// =========================================================================
+// 3. GSAP CINEMATIC CHOREOGRAPHY
+// =========================================================================
+gsap.registerPlugin(ScrollTrigger);
+
+// Navbar Blur/Border Logic
+ScrollTrigger.create({
+  start: 'top -50',
+  end: 99999,
+  toggleClass: { className: 'bg-navy/80', targets: '#navbar' }
+});
+ScrollTrigger.create({
+  start: 'top -50',
+  end: 99999,
+  toggleClass: { className: 'backdrop-blur-xl', targets: '#navbar' }
+});
+
+// Hero Sequence
+const heroTl = gsap.timeline({ defaults: { ease: "power4.out" }});
+heroTl.to('.hero-anim', { y: 0, opacity: 1, duration: 1.5, stagger: 0.2, delay: 0.5 });
+
+// ---------------------------------------------------------
+// Horizontal Pinned Timeline (The Showcase)
+// ---------------------------------------------------------
+let panels = gsap.utils.toArray(".panel");
+let scrollTween = gsap.to(panels, {
+  xPercent: -100 * (panels.length - 1),
+  ease: "none",
+  scrollTrigger: {
+    trigger: ".horizontal-scroll-wrapper",
+    pin: true,
+    scrub: 1, // Smooth scrub
+    snap: 1 / (panels.length - 1), // Snaps to panels
+    end: () => "+=" + document.querySelector(".horizontal-scroll-wrapper").offsetWidth
+  }
+});
+
+// Clip-path reveals for images inside horizontal scroll
+panels.forEach((panel, i) => {
+  const imgWrapper = panel.querySelector('.reveal-clip');
+  gsap.to(imgWrapper, {
+    clipPath: "inset(0 0% 0 0)",
+    ease: "power2.inOut",
+    scrollTrigger: {
+      trigger: panel,
+      containerAnimation: scrollTween,
+      start: "left center",
+      toggleActions: "play none none reverse"
+    }
+  });
+  
+  // Internal Parallax for images
+  const img = panel.querySelector('.panel-img');
+  gsap.to(img, {
+    xPercent: 20, // Move opposite to scroll
+    ease: "none",
+    scrollTrigger: {
+      trigger: panel,
+      containerAnimation: scrollTween,
+      start: "left right",
+      end: "right left",
+      scrub: true
+    }
+  });
+});
+
+// ---------------------------------------------------------
+// Floating Image Wall (Vertical Depth Parallax)
+// ---------------------------------------------------------
+const floatImgs = gsap.utils.toArray('.float-img');
+floatImgs.forEach(img => {
+  const speed = img.getAttribute('data-speed');
+  gsap.to(img, {
+    y: () => -100 * speed, // Move up based on speed
+    ease: "none",
+    scrollTrigger: {
+      trigger: "#floating-gallery",
+      start: "top bottom",
+      end: "bottom top",
+      scrub: 1
+    }
+  });
+});
+
+// 3D Hover Tilt for Holographic Cards
+document.querySelectorAll('.holographic-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    // Calculate rotation limits (max 15 deg)
+    const rotateX = ((y - centerY) / centerY) * -15; 
+    const rotateY = ((x - centerX) / centerX) * 15;
+    
+    gsap.to(card, {
+      rotateX: rotateX,
+      rotateY: rotateY,
+      duration: 0.4,
+      ease: "power2.out"
+    });
+  });
+  
+  card.addEventListener('mouseleave', () => {
+    gsap.to(card, { rotateX: 0, rotateY: 0, duration: 1, ease: "elastic.out(1, 0.3)" });
+  });
+});
+
+// ---------------------------------------------------------
+// Tech Rows Reveal
+// ---------------------------------------------------------
+gsap.from('.tech-row', {
+  scrollTrigger: {
+    trigger: '.tech-row',
+    start: 'top 85%'
+  },
+  x: -50,
+  opacity: 0,
+  duration: 1,
+  stagger: 0.15,
+  ease: "power3.out"
+});
+
+// Update Lenis integration with ScrollTrigger
+lenis.on('scroll', ScrollTrigger.update);
+gsap.ticker.add((time)=>{
+  lenis.raf(time * 1000);
+});
+gsap.ticker.lagSmoothing(0);
 </script>
 </body>
 </html>
